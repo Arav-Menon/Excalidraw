@@ -1,0 +1,17 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "client": "link:@prisma/client",
+    "prisma": "^6.11.0"
+  }
+}
