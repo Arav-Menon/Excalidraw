@@ -3,13 +3,29 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
-  const token = req.header("authorization") ?? "";
+  const authHeader = req.header("authorization") ?? "";
+  const token = authHeader.startsWith("Bearer") ? authHeader.split(" ")[1] : "";
 
-  const decoded = jwt.verify(token, process.env.JWT_ROOM_TOKEN ?? "");
+  if (!token) {
+    return res.status(404).json({
+      message: "Token not provided",
+    });
+  }
 
-  if (decoded) {
-    req.userId = (decoded as JwtPayload).userId
-  } else {
-    res.status(403).json({ message: "Not Authorized" });
+  try {
+    const decode = jwt.verify(
+      token,
+      process.env.JWT_ROOM_TOKEN ?? ""
+    ) as JwtPayload;
+
+    console.log(decode);
+
+    (req as any).userId = Number(decode.userId);
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Something went wrong",
+    });
   }
 }

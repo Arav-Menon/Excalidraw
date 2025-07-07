@@ -5,7 +5,7 @@ import { middleware } from '../middleware';
 
 export const roomRouter:Router = express.Router()
 
-roomRouter.post('/user/room', middleware, (req, res) => {
+roomRouter.post('/user/room', (req, res) => {
 
     res.json({
         room : "123d"

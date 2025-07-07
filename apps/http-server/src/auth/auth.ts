@@ -1,46 +1,103 @@
 import express, { Response, Request, Router } from "express";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { SignupValidations } from "@repo/common/authValidation";
+import {
+  SignupValidations,
+  SigninValidations,
+} from "@repo/common/authValidation";
 import bcrypt from "bcrypt";
-import { JWT_SECRET } from "@repo/backend-common/confing";
 import { prisma } from "@repo/db/prisma";
 
 export const userRouter: Router = express.Router();
 
 //@ts-ignore
 userRouter.post("/user/signup", async (req: Request, res: Response) => {
-  const result = SignupValidations.safeParse(req.body);
+  try {
+    const result = SignupValidations.safeParse(req.body);
 
-  if (!result.success) {
-    return res.status(400).json({
-      error: result.error.flatten().fieldErrors,
+    if (!result.success) {
+      return  res.status(400).json({
+        error: result.error.flatten().fieldErrors,
+      });
+    }
+
+    const { userName, email, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 5);
+
+    const newUser = await prisma.user.create({
+      data: {
+        userName,
+        email,
+        //@ts-ignore
+        password: hashedPassword,
+      },
+    });
+
+    console.log(newUser)
+
+    const token = jwt.sign(
+      {
+        id: newUser.id,
+      },
+      process.env.JWT_ROOM_TOKEN ?? ""
+    );
+    res.status(200).json({
+      message: "Your account has been created",
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error,
     });
   }
-
-  const { userName, email, password } = req.body;
-
-  const hashedPassword = await bcrypt.hash(password, 5);
-
-  const newUser = await prisma.user.create({
-    data: {
-      userName,
-      email,
-      //@ts-ignore
-      password : hashedPassword
-    },
-  });
-
-  const token = jwt.sign(
-    {
-      id: newUser.id,
-    },
-    process.env.JWT_ROOM_TOKEN ?? ""
-  );
-  res.status(200).json({
-    message : "Your account has been created",
-    token,
-  });
 });
 
-userRouter.post("/user/signin", (req, res) => {});
+//@ts-ignore
+userRouter.post("/user/signin", async (req, res) => {
+  try {
+    const result = SigninValidations.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        error: result.error.flatten().fieldErrors,
+      });
+    }
+
+    const { email, password } = req.body;
+
+    const existUser = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (existUser && (await bcrypt.compare(password, existUser.password))) {
+      const token = jwt.sign(
+        {
+          id: existUser.id,
+        },
+        process.env.JWT_ROOM_TOKEN ?? ""
+      );
+
+      res.status(200).json({
+        message: "You're logged in",
+        token,
+      });
+    }
+
+    if (!existUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error,
+    });
+  }
+});
