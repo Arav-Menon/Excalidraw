@@ -1,14 +1,42 @@
-import express, { Router } from 'express'
-import jwt from 'jsonwebtoken'
-import 'dotenv/config';
-import { middleware } from '../middleware';
+import express, { Router } from "express";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
+import { middleware } from "../middleware";
+import { RoomValidation } from "@repo/common/authValidation";
+import { prisma } from "@repo/db/prisma";
+import { parse } from "dotenv";
+export const roomRouter: Router = express.Router();
 
-export const roomRouter:Router = express.Router()
+//@ts-ignore
+roomRouter.post("/room", middleware, async (req, res) => {
+    const parsedData = RoomValidation.safeParse(req.body);
+    if (!parsedData.success) {
+        res.json({
+            message: "Incorrect inputs"
+        })
+        return;
+    }
+    // @ts-ignore: TODO: Fix this
+    const userId = req.userId;
+    console.log(userId)
 
-roomRouter.post('/user/room', (req, res) => {
+    try {
+        const room = await prisma.room.create({
+            data: {
+                slug: parsedData.data.name,
+                adminId: userId as number
+            }
+        })
 
-    res.json({
-        room : "123d"
-    })
+        console.log(room)
 
-} )
+        res.json({
+            roomId: room.id
+        })
+    } catch(e) {
+        console.log(e)
+        res.status(411).json({
+            message: "Room already exists with this name"
+        })
+    }
+})

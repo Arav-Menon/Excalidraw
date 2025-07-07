@@ -12,16 +12,29 @@ export const userRouter: Router = express.Router();
 
 //@ts-ignore
 userRouter.post("/user/signup", async (req: Request, res: Response) => {
+  const result = SignupValidations.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      error: result.error.flatten().fieldErrors,
+    });
+  }
   try {
-    const result = SignupValidations.safeParse(req.body);
-
-    if (!result.success) {
-      return  res.status(400).json({
-        error: result.error.flatten().fieldErrors,
-      });
-    }
-
     const { userName, email, password } = req.body;
+
+    const findUser = await prisma.user.findMany({
+      where: {
+        email,
+      },
+    });
+
+    if (findUser) {
+      res.status(409).json({
+        error: "User already exist",
+        findUser,
+      });
+      return;
+    }
 
     const hashedPassword = await bcrypt.hash(password, 5);
 
@@ -34,7 +47,7 @@ userRouter.post("/user/signup", async (req: Request, res: Response) => {
       },
     });
 
-    console.log(newUser)
+    console.log(newUser);
 
     const token = jwt.sign(
       {

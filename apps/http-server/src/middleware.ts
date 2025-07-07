@@ -1,31 +1,24 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 export function middleware(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.header("authorization") ?? "";
-  const token = authHeader.startsWith("Bearer") ? authHeader.split(" ")[1] : "";
+  const token = req.headers["authorization"];
 
   if (!token) {
-    return res.status(404).json({
-      message: "Token not provided",
-    });
+    return res.status(403).json({ message: "Unauthorized: Token missing" });
   }
 
   try {
-    const decode = jwt.verify(
-      token,
-      process.env.JWT_ROOM_TOKEN ?? ""
-    ) as JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_ROOM_TOKEN ?? "") as { userId: number };
 
-    console.log(decode);
+    console.log(decoded)
 
-    (req as any).userId = Number(decode.userId);
+    //@ts-ignore
+    req.userId = decoded.id ;
     next();
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Something went wrong",
-    });
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return res.status(403).json({ message: "Invalid token" });
   }
 }

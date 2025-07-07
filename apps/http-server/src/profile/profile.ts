@@ -47,7 +47,7 @@ profileRouter.get("/user/profile", middleware, async (req, res) => {
 });
 
 //@ts-ignore
-profileRouter.post("/user/profile/edit", middleware, async (req, res) => {
+profileRouter.put("/user/profile/edit", middleware, async (req, res) => {
   const result = SignupValidations.safeParse(req.body);
 
   if (!result.success) {
@@ -79,8 +79,20 @@ profileRouter.post("/user/profile/edit", middleware, async (req, res) => {
   }
 });
 
-// profileRouter.delete("/user/profile/delete", middleware, async (req, res) => {
+//@ts-ignore
+profileRouter.delete("/user/profile/delete", middleware, async (req, res) => {
 
-//   const removeUser = await prisma.user.de
+  //@ts-ignore
+  const userId = req.userId 
 
-// });
+  const removeUser = await prisma.user.delete({
+    where : {
+      id : userId
+    }
+  })
+
+  res.status(200).json({
+    message : `User ${removeUser.userName} has been deleted`
+  })
+
+});
