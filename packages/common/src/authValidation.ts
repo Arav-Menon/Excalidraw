@@ -26,3 +26,7 @@ export const SigninValidations = z.object({
   //     .refine((password) => !/\s/.test(password), 'Password cannot contain whitespace')
   password: z.string().trim().min(6, "Password must be at least 6 characters"),
 });
+
+export const RoomValidation = z.object({
+  name: z.string().min(3).max(20),
+});
