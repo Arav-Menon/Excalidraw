@@ -6,16 +6,6 @@ import bcrypt from "bcrypt";
 
 export const profileRouter: Router = express.Router();
 
-// profileRouter.get("/user/profile", middleware, async (req, res) => {
-//   const getUser = await prisma.user.findMany();
-
-//   console.log(getUser);
-
-//   res.send({
-//     getUser,
-//   });
-// });
-
 //@ts-ignore
 profileRouter.get("/user/profile", middleware, async (req, res) => {
 
