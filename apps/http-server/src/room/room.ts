@@ -40,3 +40,7 @@ roomRouter.post("/room", middleware, async (req, res) => {
         })
     }
 })
+
+roomRouter.get("/chats/:roomId", (req, res) => {
+    const roomId = Number(req.params.roomId);
+})
