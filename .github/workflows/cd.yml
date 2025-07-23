@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./
-          file: ./Dockerfiles/Dockerfiles.http
+          file: ./Dockerfiles/Dockerfile.http
           push: true
           tags: aravmenon12/excalidraw:${{ github.sha }}
 
@@ -32,6 +32,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./
-          file: ./Dockerfiles/Dockerfiles.ws
+          file: ./Dockerfiles/Dockerfile.ws
           push: true
           tags: aravmenon12/excalidraw:${{ github.sha }}
