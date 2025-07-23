@@ -16,8 +16,8 @@ roomRouter.post("/room", middleware, async (req, res) => {
         })
         return;
     }
-    // @ts-ignore: TODO: Fix this
-    const userId = req.userId;
+
+    const userId = req.id;
     console.log(userId)
 
     try {

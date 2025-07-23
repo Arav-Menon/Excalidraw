@@ -10,12 +10,12 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_ROOM_TOKEN ?? "") as { userId: number };
+    const decoded = jwt.verify(token, "process.env.JWT_ROOM_TOKEN");
 
     console.log(decoded)
 
     //@ts-ignore
-    req.userId = decoded.id ;
+    req.id = decoded.id ;
     next();
   } catch (err) {
     console.error("JWT verification failed:", err);

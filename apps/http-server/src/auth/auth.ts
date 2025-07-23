@@ -22,19 +22,18 @@ userRouter.post("/user/signup", async (req: Request, res: Response) => {
   try {
     const { userName, email, password } = req.body;
 
-    const findUser = await prisma.user.findMany({
-      where: {
-        email,
-      },
-    });
+    // const findUser = await prisma.user.findMany({
+    //   where: {
+    //     email,
+    //   },
+    // });
 
-    if (findUser) {
-      res.status(409).json({
-        error: "User already exist",
-        findUser,
-      });
-      return;
-    }
+    // if (findUser) {
+    //   res.status(409).json({
+    //     error: "User already exist",
+    //     findUser,
+    //   });
+    // }
 
     const hashedPassword = await bcrypt.hash(password, 5);
 
@@ -53,7 +52,7 @@ userRouter.post("/user/signup", async (req: Request, res: Response) => {
       {
         id: newUser.id,
       },
-      process.env.JWT_ROOM_TOKEN ?? ""
+      "process.env.JWT_ROOM_TOKEN"
     );
     res.status(200).json({
       message: "Your account has been created",
@@ -92,7 +91,7 @@ userRouter.post("/user/signin", async (req, res) => {
         {
           id: existUser.id,
         },
-        process.env.JWT_ROOM_TOKEN ?? ""
+        "process.env.JWT_ROOM_TOKEN"
       );
 
       res.status(200).json({
