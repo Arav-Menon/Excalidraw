@@ -19,4 +19,4 @@ WORKDIR /usr/src/app/apps/ws-server
 
 EXPOSE 8080
 
-CMD [ "pnpm", "dev" ]
+CMD [ "pnpm", "start" ]
