@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  postgresDb:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: excalidraw_clone
+    ports:
+      - "5432:5432"
+    volumes:
+      - excalidraw_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -h localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  http_backend:
+    build:
+      context: ./
+      dockerfile: Dockerfiles/Dockerfile.http
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: "postgres://postgres:excalidraw_clone@postgresDb:5432/postgres"
+    depends_on:
+      postgresDb:
+        condition: service_healthy
+
+  ws_backend:
+    build:
+      context: ./
+      dockerfile: Dockerfiles/Dockerfile.ws
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: "postgres://postgres:excalidraw_clone@postgresDb:5432/postgres"
+    depends_on:
+      postgresDb:
+        condition: service_healthy
+
+volumes:
+  excalidraw_db:
