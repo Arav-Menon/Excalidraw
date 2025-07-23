@@ -9,17 +9,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
-      - name: "Clone the repo" 
+      - name: "Clone the repo"
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: "Install node"
-        uses: "actions/setup-node@v4"
-        with: 
-            node-version: "20"
-        
-      - run: "npm install -g pnpm"
-      - run: "pnpm install"
-      
+      - name: Docker login
+        uses: docker/login@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_PASSWORD}}
+
+      - name: Build & push HTTP_BACKEND
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: ./Dockerfiles/Dockerfiles.http
+          push: true
+          tags: aravmenon12/excalidraw:${{ github.sha }}
+
+      - name: build & push WS_BACKEND
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          file: ./Dockerfiles/Dockerfiles.ws
+          push: true
+          tags: aravmenon12/excalidraw:${{ github.sha }}
