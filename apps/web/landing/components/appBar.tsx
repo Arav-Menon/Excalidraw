@@ -1,8 +1,13 @@
+"use client"
 import { Github, PenTool, Rocket } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@repo/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
+
+    const router = useRouter();
+
     return(
         <>
         <header className="sticky top-0 z-50 w-full backdrop-blur-2xl bg-black/20 border-b border-white/10">
@@ -44,7 +49,9 @@ export default function NavBar() {
                 <div className="flex items-center  "><Github className="h-4 w-4 mr-2" />
                 <span className="font-bold">50.2k</span></div>
               </Button>
-              <Button className="relative group bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-bold px-6 py-3 rounded-xl shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300">
+              <Button className="relative group bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-bold px-6 py-3 rounded-xl shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300" onClick={() => {
+                router.push('/signup')
+              }} >              
                 <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
                 <div className="relative flex items-center">
                   <Rocket className="h-4 w-4 mr-2" />
