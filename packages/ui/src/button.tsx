@@ -1,20 +1,21 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, MouseEventHandler } from "react";
 
 interface ButtonProps {
   children: ReactNode;
   className?: string;
-  variant?: string;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  variant?: string; // Note: HTML button doesn't support `variant` attribute natively
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export const Button = ({ children, className, variant }: ButtonProps) => {
+export const Button = ({ children, className, variant, onClick }: ButtonProps) => {
   return (
     <button
       className={className}
-      //@ts-ignore
-      variant={variant}
+      onClick={onClick}
+      // Remove this line ↓ because it's not a valid HTML attribute
+      // variant={variant}
     >
       {children}
     </button>
