@@ -55,7 +55,6 @@ userRouter.post("/user/signup", async (req: Request, res: Response) => {
       "process.env.JWT_ROOM_TOKEN"
     );
     res.status(200).json({
-      message: "Your account has been created",
       token,
     });
   } catch (error) {
