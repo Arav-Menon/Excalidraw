@@ -59,7 +59,7 @@ export default function Footer() {
                     <div className="relative">
                       <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl blur opacity-0 group-hover:opacity-75 transition duration-300"></div>
                       <div className="relative bg-gray-800 p-3 rounded-xl group-hover:bg-gray-700 transition-colors">
-                        <div className="h-6 w-6 text-gray-400 group-hover:text-white" />
+                        {/* <Icon className="h-6 w-6 text-gray-400 group-hover:text-white" /> */}
                       </div>
                     </div>
                   </Link>

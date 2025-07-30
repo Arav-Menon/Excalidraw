@@ -20,19 +20,19 @@ import {
   LogIn,
 } from "lucide-react";
 import Link from "next/link";
+import { signin } from "../../utils/api";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(Boolean)
+  const rotuer = useRouter();
+  const onHandleclick = async () => {
+    const token = await signin(email, password);
+    console.log(token)
+    localStorage.setItem("token", token);
+    rotuer.push('/canvas')
   };
 
   return (
@@ -133,7 +133,7 @@ export default function SignInPage() {
           {/* Sign In Form */}
           <div className="bg-gradient-to-br from-gray-900/90 via-blue-900/30 to-cyan-900/30 border border-white/20 backdrop-blur-xl shadow-2xl">
             <div className="p-8">
-              <form className="space-y-5">
+              <div className="space-y-5">
                 {/* Email Field */}
                 <div className="relative group">
                   <label className="block text-sm font-bold text-gray-300 mb-2">
@@ -144,8 +144,7 @@ export default function SignInPage() {
                     <input
                       type="email"
                       name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="w-full pl-12 pr-4 py-4 bg-black/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300 backdrop-blur-sm"
                       placeholder="Enter your email"
                     />
@@ -162,8 +161,7 @@ export default function SignInPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
+                      onChange={(e) => setPassword(e.target.value)}
                       className="w-full pl-12 pr-12 py-4 bg-black/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 backdrop-blur-sm"
                       placeholder="Enter your password"
                     />
@@ -202,14 +200,17 @@ export default function SignInPage() {
                 </div>
 
                 {/* Sign In Button */}
-                <Button className="w-full group relative bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-500 hover:from-blue-400 hover:via-cyan-400 hover:to-purple-400 text-white py-4 text-lg font-black rounded-xl shadow-2xl hover:shadow-cyan-500/50 transition-all duration-500 hover:scale-105">
+                <div className="w-full group relative bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-500 hover:from-blue-400 hover:via-cyan-400 hover:to-purple-400 text-white py-4 text-lg font-black rounded-xl shadow-2xl hover:shadow-cyan-500/50 transition-all duration-500 hover:scale-105" onClick={onHandleclick} >
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                  <div className="relative flex items-center justify-center">
+                  <Button
+                    className="relative flex items-center justify-center"
+                    onClick={onHandleclick}
+                  >
                     <Rocket className="mr-3 h-6 w-6 group-hover:animate-pulse" />
                     ENTER THE MATRIX
                     <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Button>
+                  </Button>
+                </div>
 
                 {/* Divider */}
                 <div className="relative my-8">
@@ -245,7 +246,7 @@ export default function SignInPage() {
                     </div>
                   </Button>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
 

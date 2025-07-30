@@ -1,9 +1,9 @@
 "use client";
 
 import type React from "react";
-
+import { signup } from "../../utils/api";
 import { useState } from "react";
-import { Button } from "@repo/ui/button";
+// import { button } from "@repo/ui/button";
 import {
   User,
   Mail,
@@ -21,22 +21,30 @@ import {
   CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [email, setEmail] = useState("");
+  const [userName, setuserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState();
+  const [loader, setLoader] = useState(false);
+  const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const onHandleSubmit = async () => {
+    try {
+      const token = await signup(userName, email, password);
+      localStorage.setItem("token", token)
+      console.log(`Signup suceed ${token}`);
+      router.push("/canvas");
+    } catch (error) {
+      setError(() => {
+        error;
+        console.log(error);
+      });
+    }
   };
 
   return (
@@ -102,12 +110,12 @@ export default function SignUpPage() {
 
             <div className="flex items-center space-x-4">
               <Link href="/signin">
-                <Button
-                  variant="ghost"
+                <button
+                  // variant="ghost"
                   className="text-gray-300 hover:text-white border border-white/20 hover:border-white/40 transition-all duration-300 px-6 py-3 rounded-xl cursor-pointer "
                 >
                   Sign In
-                </Button>
+                </button>
               </Link>
             </div>
           </div>
@@ -142,7 +150,7 @@ export default function SignUpPage() {
           {/* Sign Up Form */}
           <div className="bg-gradient-to-br from-gray-900/90 via-purple-900/30 to-pink-900/30 border border-white/20 backdrop-blur-xl shadow-2xl rounded-xl ">
             <div className="p-8">
-              <form className="space-y-6">
+              <div className="space-y-6">
                 {/* Name and Email in one row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name Field */}
@@ -155,8 +163,7 @@ export default function SignUpPage() {
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
+                        onChange={(e) => setuserName(e.target.value)}
                         className="w-full pl-12 pr-4 py-4 bg-black/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 backdrop-blur-sm"
                         placeholder="Enter your full name"
                       />
@@ -173,8 +180,7 @@ export default function SignUpPage() {
                       <input
                         type="email"
                         name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full pl-12 pr-4 py-4 bg-black/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all duration-300 backdrop-blur-sm"
                         placeholder="Enter your email"
                       />
@@ -194,8 +200,7 @@ export default function SignUpPage() {
                       <input
                         type={showPassword ? "text" : "password"}
                         name="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="w-full pl-12 pr-12 py-4 bg-black/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 transition-all duration-300 backdrop-blur-sm"
                         placeholder="Create a strong password"
                       />
@@ -213,36 +218,7 @@ export default function SignUpPage() {
                     </div>
                   </div>
 
-                  {/* Confirm Password Field */}
-                  <div className="relative group">
-                    <label className="block text-sm font-bold text-gray-300 mb-2">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <Shield className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-green-400 transition-colors" />
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        className="w-full pl-12 pr-12 py-4 bg-black/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-400/20 transition-all duration-300 backdrop-blur-sm"
-                        placeholder="Confirm your password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-5 w-5" />
-                        ) : (
-                          <Eye className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
+                  
                 </div>
 
                 {/* Rest of the form remains the same */}
@@ -274,15 +250,19 @@ export default function SignUpPage() {
                   </label>
                 </div>
 
-                {/* Sign Up Button */}
-                <Button className="w-full group relative bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-400 hover:via-purple-400 hover:to-pink-400 text-white py-4 text-lg font-black rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-500 hover:scale-105">
+                {/* Sign Up button */}
+                <div className="w-full group relative bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 hover:from-cyan-400 hover:via-purple-400 hover:to-pink-400 text-white py-4 text-lg font-black rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-500 hover:scale-105">
                   <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                  <div className="relative flex items-center justify-center">
+                  <button
+                    onClick={onHandleSubmit}
+                    type="submit"
+                    className="relative flex items-center justify-center"
+                  >
                     <Rocket className="mr-3 h-6 w-6 group-hover:animate-pulse" />
                     CREATE ACCOUNT
                     <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Button>
+                  </button>
+                </div>
 
                 {/* Divider */}
                 <div className="relative my-8">
@@ -296,28 +276,25 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
-                {/* Social Login Buttons */}
+                {/* Social Login buttons */}
                 <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    variant="outline"
-                    className="group border-2 border-white/20 hover:border-white/40 bg-black/30 hover:bg-white/10 text-white py-3 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105"
-                  >
+                  <button className="group border-2 border-white/20 hover:border-white/40 bg-black/30 hover:bg-white/10 text-white py-3 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105">
                     <div className="flex items-center justify-center">
                       <Github className="h-5 w-5 mr-2 group-hover:animate-pulse" />
                       GitHub
                     </div>
-                  </Button>
-                  <Button
-                    variant="outline"
+                  </button>
+                  <button
+                    // variant="outline"
                     className="group border-2 border-white/20 hover:border-white/40 bg-black/30 hover:bg-white/10 text-white py-3 rounded-xl backdrop-blur-sm transition-all duration-300 hover:scale-105"
                   >
-                    <div className="flex justify-center items-center " >
+                    <div className="flex justify-center items-center ">
                       <Chrome className="h-5 w-5 mr-2 group-hover:animate-pulse" />
                       Google
                     </div>
-                  </Button>
+                  </button>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
 

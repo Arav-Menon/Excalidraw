@@ -53,7 +53,7 @@ export default function NavBar() {
                 router.push('/signup')
               }} >              
                 <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
-                <div className="relative flex items-center">
+                <div className="relative flex items-center cursor-pointer ">
                   <Rocket className="h-4 w-4 mr-2" />
                   Launch
                 </div>
