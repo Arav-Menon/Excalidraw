@@ -32,7 +32,7 @@ export default function SignInPage() {
     const token = await signin(email, password);
     console.log(token)
     localStorage.setItem("token", token);
-    rotuer.push('/canvas')
+    rotuer.push('/workspace')
   };
 
   return (
